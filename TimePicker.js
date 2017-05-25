@@ -22,6 +22,7 @@ const styles = StyleSheet.create({
 class TimePicker extends React.Component {
   constructor(props) {
     super(props);
+
     this.selectedDate = this.props.initDate ? new Date(this.props.initDate) : new Date();
     const time12format = hourTo12Format(this.selectedDate.getHours());
     this.hours = this.props.hours ? this.props.hours : getHoursArray();
@@ -29,6 +30,16 @@ class TimePicker extends React.Component {
     this.initHourInex = time12format[0] - 1;
     this.initMinuteInex = Math.round(this.selectedDate.getMinutes() / 5);
     this.initAmInex = time12format[1] === 'AM' ? 0 : 1;
+
+    this.state = {
+      selectedDate: this.selectedDate
+    }
+  }
+
+  componentWillReceiveProps(newProps: any) {
+    if (this.props.initDate != newProps.initDate) {
+      this.setState({selectedDate: newProps.initDate ? new Date(newProps.initDate) : new Date()})
+    }
   }
 
   render() {
@@ -71,29 +82,29 @@ class TimePicker extends React.Component {
   }
 
   onHourSelected(event) {
-    const time12format = hourTo12Format(this.selectedDate.getHours());
+    const time12format = hourTo12Format(this.state.selectedDate.getHours());
     const newTime12Format = `${event.data} ${time12format[1]}`;
     const selectedHour24format = hourTo24Format(newTime12Format);
-    this.selectedDate.setHours(selectedHour24format);
+    this.state.selectedDate.setHours(selectedHour24format);
     this.onTimeSelected();
   }
 
   onMinuteSelected(event) {
-    this.selectedDate.setMinutes(event.data);
+    this.state.selectedDate.setMinutes(event.data);
     this.onTimeSelected();
   }
 
   onAmSelected(event) {
-    const time12format = hourTo12Format(this.selectedDate.getHours());
+    const time12format = hourTo12Format(this.state.selectedDate.getHours());
     const newTime12Format = `${time12format[0]} ${event.data}`;
     const selectedHour24format = hourTo24Format(newTime12Format);
-    this.selectedDate.setHours(selectedHour24format);
+    this.state.selectedDate.setHours(selectedHour24format);
     this.onTimeSelected();
   }
 
   onTimeSelected() {
     if (this.props.onTimeSelected) {
-      this.props.onTimeSelected(this.selectedDate);
+      this.props.onTimeSelected(this.state.selectedDate);
     }
   }
 
